@@ -1,31 +1,35 @@
 <template>
-  <a-calendar v-model="value" />
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view />
+  <div class="basiclayout">
+    <a-layout style="height: 400px">
+      <a-layout-header class="header">OJ</a-layout-header>
+
+      <a-layout-content class="content">
+        <router-view />
+      </a-layout-content>
+
+      <a-layout-footer class="footer">
+        <a href="https://becoze.github.io/wiki" target="_blank"> Becoze </a>
+      </a-layout-footer>
+    </a-layout>
+  </div>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<style scoped>
+#basiclayout {
 }
 
-nav {
-  padding: 30px;
+#basiclayout .header {
+  background: #42b983;
+  margin-bottom: 16px;
 }
 
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
+#basiclayout .content {
+  background: linear-gradient(to right, #aaa, #fff);
+  margin-bottom: 16px;
 }
 
-nav a.router-link-exact-active {
-  color: #42b983;
+#basiclayout .footer {
+  background: #efefef;
 }
 </style>
+<script setup lang="ts"></script>
