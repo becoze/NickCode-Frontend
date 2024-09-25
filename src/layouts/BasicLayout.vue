@@ -1,7 +1,9 @@
 <template>
-  <div class="basiclayout">
+  <div id="basiclayout">
     <a-layout style="height: 400px">
-      <a-layout-header class="header">OJ</a-layout-header>
+      <a-layout-header class="header">
+        <GlobalHalder />
+      </a-layout-header>
 
       <a-layout-content class="content">
         <router-view />
@@ -24,12 +26,20 @@
 }
 
 #basiclayout .content {
-  background: linear-gradient(to right, #aaa, #fff);
+  background: linear-gradient(to right, #eee, #fff);
   margin-bottom: 16px;
 }
 
 #basiclayout .footer {
   background: #efefef;
+  padding: 16px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
 }
 </style>
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import GlobalHalder from "@/components/GlobalHalder.vue";
+</script>
