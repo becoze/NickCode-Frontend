@@ -2,7 +2,7 @@
   <div id="basiclayout">
     <a-layout style="height: 400px">
       <a-layout-header class="header">
-        <GlobalHalder />
+        <GlobalHeader />
       </a-layout-header>
 
       <a-layout-content class="content">
@@ -41,5 +41,5 @@
 }
 </style>
 <script setup lang="ts">
-import GlobalHalder from "@/components/GlobalHalder.vue";
+import GlobalHeader from "@/components/GlobalHeader.vue";
 </script>
