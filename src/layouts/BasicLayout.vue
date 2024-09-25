@@ -21,8 +21,8 @@
 }
 
 #basiclayout .header {
-  background: #42b983;
   margin-bottom: 16px;
+  box-shadow: #eee 1px 1px 5px;
 }
 
 #basiclayout .content {
