@@ -22,7 +22,7 @@
       </a-menu>
     </a-col>
     <a-col flex="100px">
-      <div>User Profile</div>
+      <div>{{ store.state.user?.loginUser?.userName ?? "Please Login" }}</div>
     </a-col>
   </a-row>
 </template>
@@ -31,6 +31,7 @@
 import { routes } from "@/router/routes";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
+import { useStore } from "vuex";
 
 const router = useRouter();
 
@@ -49,6 +50,9 @@ const doMenuClick = (key: string) => {
     path: key,
   });
 };
+
+const store = useStore();
+console.log();
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
