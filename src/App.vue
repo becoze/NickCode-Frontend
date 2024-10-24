@@ -1,5 +1,7 @@
 <template>
-  <div id="app"><BasicLayout /></div>
+  <div id="app">
+    <BasicLayout />
+  </div>
 </template>
 
 <style>
@@ -11,6 +13,18 @@
 import BasicLayout from "@/layouts/BasicLayout.vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import { onMounted } from "vue";
+
+/**
+ * Global initialization method (suitable for one times code/method)
+ */
+const doInit = () => {
+  console.log("HelloWorld");
+};
+
+onMounted(() => {
+  doInit();
+});
 
 const router = useRouter();
 const store = useStore();
