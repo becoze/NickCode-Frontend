@@ -30,20 +30,27 @@
 <script setup lang="ts">
 import { routes } from "@/router/routes";
 import { useRouter } from "vue-router";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
+import checkAccess from "@/access/checkAccess";
+import ACCESS_ENUM from "@/access/ACCESS_ENUM";
 
 const router = useRouter();
+const store = useStore();
 
-const visibleRoutes = routes.filter((item, index) => {
-  return !item.meta?.hideInMenu;
-  /*
-  if (item.meta?.hideInMenu) {
-    return false;
-  }
-  return true;
-   */
+const visibleRoutes = computed(() => {
+  return routes.filter((item, index) => {
+    if (item.meta?.hideInMenu) {
+      return false;
+    }
+
+    if (!checkAccess(store.state.user.loginUser, item.meta?.access as string)) {
+      return false;
+    }
+    return true;
+  });
 });
+
 /**
  * Record and change the value of "current page (the selectedKeys)" on each page routing, to make the nav bar display match the page routing.
  */
@@ -60,8 +67,14 @@ const doMenuClick = (key: string) => {
   });
 };
 
-const store = useStore();
 console.log();
+
+setTimeout(() => {
+  store.dispatch("user/getLoginUser", {
+    userName: "Nick",
+    userRole: ACCESS_ENUM.ADMIN,
+  });
+}, 2000);
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
