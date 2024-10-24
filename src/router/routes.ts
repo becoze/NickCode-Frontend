@@ -15,6 +15,7 @@ export const routes: Array<RouteRecordRaw> = [
     component: AdminView,
     meta: {
       access: "canAdmin", // canAdmin, (canUser)
+      hideInMenu: true,
     },
   },
   {
@@ -30,5 +31,8 @@ export const routes: Array<RouteRecordRaw> = [
     path: "/noAuth",
     name: "noAuth",
     component: NoAuthView,
+    meta: {
+      hideInMenu: true,
+    },
   },
 ];

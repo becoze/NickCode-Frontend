@@ -16,7 +16,7 @@
             <div class="title">Becoze OJ</div>
           </div>
         </a-menu-item>
-        <a-menu-item v-for="item in routes" :key="item.path"
+        <a-menu-item v-for="item in visibleRoutes" :key="item.path"
           >{{ item.name }}
         </a-menu-item>
       </a-menu>
@@ -35,6 +35,15 @@ import { useStore } from "vuex";
 
 const router = useRouter();
 
+const visibleRoutes = routes.filter((item, index) => {
+  return !item.meta?.hideInMenu;
+  /*
+  if (item.meta?.hideInMenu) {
+    return false;
+  }
+  return true;
+   */
+});
 /**
  * Record and change the value of "current page (the selectedKeys)" on each page routing, to make the nav bar display match the page routing.
  */
