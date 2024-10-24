@@ -8,7 +8,7 @@ export default {
   state: () => ({
     loginUser: {
       username: "Nick",
-      role: "",
+      userRole: "",
       userLoginStatus: "",
     },
   }),

@@ -15,7 +15,6 @@ export const routes: Array<RouteRecordRaw> = [
     component: AdminView,
     meta: {
       access: "canAdmin", // canAdmin, (canUser)
-      hideInMenu: true,
     },
   },
   {
