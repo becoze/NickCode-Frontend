@@ -36,3 +36,5 @@ const checkAccess = (
 
   return true;
 };
+
+export default checkAccess;

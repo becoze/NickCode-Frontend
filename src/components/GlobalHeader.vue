@@ -33,7 +33,6 @@ import { useRouter } from "vue-router";
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import checkAccess from "@/access/checkAccess";
-import ACCESS_ENUM from "@/access/ACCESS_ENUM";
 
 const router = useRouter();
 const store = useStore();
@@ -68,13 +67,13 @@ const doMenuClick = (key: string) => {
 };
 
 console.log();
-
-setTimeout(() => {
-  store.dispatch("user/getLoginUser", {
-    userName: "Nick",
-    userRole: ACCESS_ENUM.ADMIN,
-  });
-}, 2000);
+//
+// setTimeout(() => {
+//   store.dispatch("user/getLoginUser", {
+//     userName: "Nick",
+//     userRole: ACCESS_ENUM.ADMIN,
+//   });
+// }, 2000);
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
