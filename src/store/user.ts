@@ -8,7 +8,7 @@ export default {
   // store user status
   state: () => ({
     loginUser: {
-      userName: "Please Login",
+      userName: "Not logged in",
       // userRole: ACCESS_ENUM.NOT_LOGIN,
       // userLoginStatus: ACCESS_ENUM.NOT_LOGIN,
     },

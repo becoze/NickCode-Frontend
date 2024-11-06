@@ -11,8 +11,6 @@
 
 <script setup lang="ts">
 import BasicLayout from "@/layouts/BasicLayout.vue";
-import { useRouter } from "vue-router";
-import { useStore } from "vuex";
 import { onMounted } from "vue";
 
 /**
@@ -24,20 +22,5 @@ const doInit = () => {
 
 onMounted(() => {
   doInit();
-});
-
-const router = useRouter();
-const store = useStore();
-
-router.beforeEach((to, from, next) => {
-  // is the page admin only
-  if (to.meta?.access === "canAdmin") {
-    // is the user admin
-    if (store.state.user.loginUser?.role !== "admin") {
-      next("/noAuth");
-      return;
-    }
-  }
-  next();
 });
 </script>
