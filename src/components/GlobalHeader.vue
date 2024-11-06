@@ -53,7 +53,7 @@ console.log(store.state.user.loginUser);
 
 // test user.ts action getLoginUser()
 setTimeout(() => {
-  store.dispatch("user/getLoginUser", { userName: "Nick" });
+  store.dispatch("user/getLoginUser", { userName: "Nick", role: "admin" });
 }, 3000);
 </script>
 
