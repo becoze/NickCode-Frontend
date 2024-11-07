@@ -12,6 +12,18 @@
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import BasicLayout from "@/layouts/BasicLayout.vue";
+import { onMounted } from "vue";
+
+/**
+ * Global initialization method (suitable for one times code/method)
+ */
+const doInit = () => {
+  console.log("HelloWorld");
+};
+
+onMounted(() => {
+  doInit();
+});
 
 const router = useRouter();
 const store = useStore();
