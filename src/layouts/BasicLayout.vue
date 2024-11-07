@@ -22,12 +22,13 @@
 
 #basiclayout .header {
   background: #42b983;
-  margin-bottom: 16px;
+  box-shadow: #eee 1px 1px 5px;
 }
 
 #basiclayout .content {
   background: linear-gradient(to right, #eee, #fff);
   margin-bottom: 16px;
+  padding: 16px;
 }
 
 #basiclayout .footer {
