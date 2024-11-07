@@ -32,8 +32,10 @@
 <script setup lang="ts">
 import { routes } from "@/router/routes";
 import { useRouter } from "vue-router";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
+import checkAccess from "@/access/checkAccesss";
+import ACCESS_ENUM from "@/access/accessEnum";
 
 const store = useStore();
 const router = useRouter();
@@ -44,15 +46,25 @@ const doMenuClick = (key: string) => {
   });
 };
 
-// Find all visible routes/pages using "route meta" variable
-const visibleRoutes = routes.filter((item, index) => {
-  if (item.meta?.hideInMenu) {
-    return false;
-  }
-  return true;
+/**
+ * Filter what routes/pages to display
+ */
+const visibleRoutes = computed(() => {
+  return routes.filter((item, index) => {
+    if (item.meta?.hideInMenu) {
+      return false;
+    }
+
+    if (!checkAccess(store.state.user.loginUser, item.meta?.access as string)) {
+      return false;
+    }
+    return true;
+  });
 });
 
-// Set default redirect page as homepage, and remember current page after each page route, for use stay current page after refresh
+/**
+ * Set default redirect page as homepage, and remember current page after each page route, for use stay current page after refresh
+ */
 const selectedKeys = ref(["/"]);
 router.afterEach((to, from, failure) => {
   selectedKeys.value = [to.path];
@@ -60,9 +72,14 @@ router.afterEach((to, from, failure) => {
 
 console.log(store.state.user.loginUser);
 
-// test user.ts action getLoginUser()
+/**
+ * TEST user.ts action getLoginUser()
+ */
 setTimeout(() => {
-  store.dispatch("user/getLoginUser", { userName: "Nick", role: "admin" });
+  store.dispatch("user/getLoginUser", {
+    userName: "Nick",
+    userRole: ACCESS_ENUM.ADMIN,
+  });
 }, 3000);
 </script>
 

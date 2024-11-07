@@ -1,5 +1,6 @@
 // initial state
 import { StoreOptions } from "vuex";
+import ACCESS_ENUM from "@/access/accessEnum";
 
 export default {
   namespaced: true,
@@ -7,8 +8,8 @@ export default {
   // store user status
   state: () => ({
     loginUser: {
-      username: "Nick",
-      role: "",
+      userName: "Please Login",
+      userRole: ACCESS_ENUM.NOT_LOGIN,
     },
   }),
 

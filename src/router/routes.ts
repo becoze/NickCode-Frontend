@@ -2,6 +2,7 @@ import { RouteRecordRaw } from "vue-router";
 import HomeView from "@/views/HomeView.vue";
 import AdminView from "@/views/AdminView.vue";
 import NoAuthView from "@/views/NoAuthView.vue";
+import ACCESS_ENUM from "@/access/accessEnum";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -14,7 +15,7 @@ export const routes: Array<RouteRecordRaw> = [
     name: "Admin Only",
     component: AdminView,
     meta: {
-      access: "admin", // admin, (user)
+      access: ACCESS_ENUM.ADMIN, // admin, (user)
     },
   },
   {
