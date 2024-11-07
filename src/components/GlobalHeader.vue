@@ -75,12 +75,12 @@ console.log(store.state.user.loginUser);
 /**
  * TEST user.ts action getLoginUser()
  */
-setTimeout(() => {
-  store.dispatch("user/getLoginUser", {
-    userName: "Nick",
-    userRole: ACCESS_ENUM.ADMIN,
-  });
-}, 3000);
+// setTimeout(() => {
+//   store.dispatch("user/getLoginUser", {
+//     userName: "Nick",
+//     userRole: ACCESS_ENUM.ADMIN,
+//   });
+// }, 3000);
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

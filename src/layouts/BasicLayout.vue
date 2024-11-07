@@ -20,19 +20,19 @@
 #basicLayout {
 }
 
-#basiclayout .header {
-  background: #42b983;
+#basicLayout .header {
   box-shadow: #eee 1px 1px 5px;
+  height: 60px;
+  margin: 5px;
 }
 
-#basiclayout .content {
+#basicLayout .content {
   background: linear-gradient(to right, #eee, #fff);
   margin-bottom: 16px;
   padding: 16px;
 }
 
-#basiclayout .footer {
-  background: #efefef;
+#basicLayout .footer {
   padding: 16px;
   position: sticky;
   left: 0;
