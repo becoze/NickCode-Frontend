@@ -17,7 +17,7 @@
               <div class="title">Becoze OJ</div>
             </div>
           </a-menu-item>
-          <a-menu-item v-for="item in routes" :key="item.path"
+          <a-menu-item v-for="item in visibleRoutes" :key="item.path"
             >{{ item.name }}
           </a-menu-item>
         </a-menu>
@@ -37,11 +37,20 @@ import { useStore } from "vuex";
 
 const store = useStore();
 const router = useRouter();
+
 const doMenuClick = (key: string) => {
   router.push({
     path: key,
   });
 };
+
+// Find all visible routes/pages using "route meta" variable
+const visibleRoutes = routes.filter((item, index) => {
+  if (item.meta?.hideInMenu) {
+    return false;
+  }
+  return true;
+});
 
 // Set default redirect page as homepage, and remember current page after each page route, for use stay current page after refresh
 const selectedKeys = ref(["/"]);
