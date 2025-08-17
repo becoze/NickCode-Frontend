@@ -1,10 +1,7 @@
 <template>
-  <div id="basicLayout">
+  <div id="userLayout">
     <a-layout style="min-height: 100vh">
-      <a-layout-header class="header">
-        <GlobalHeader />
-      </a-layout-header>
-
+      <a-layout-header class="header"> user Login </a-layout-header>
       <a-layout-content class="content">
         <router-view />
       </a-layout-content>
@@ -17,22 +14,22 @@
 </template>
 
 <style scoped>
-#basicLayout {
+#userLayout {
 }
 
-#basicLayout .header {
+#userLayout .header {
   box-shadow: #eee 1px 1px 5px;
   height: 60px;
   margin: 5px;
 }
 
-#basicLayout .content {
+#userLayout .content {
   background: linear-gradient(to right, #eee, #fff);
   margin-bottom: 16px;
   padding: 16px;
 }
 
-#basicLayout .footer {
+#userLayout .footer {
   padding: 16px;
   position: sticky;
   left: 0;
@@ -40,10 +37,4 @@
   text-align: center;
 }
 </style>
-<script>
-import GlobalHeader from "@/components/GlobalHeader.vue";
-
-export default {
-  components: { GlobalHeader },
-};
-</script>
+<script></script>
