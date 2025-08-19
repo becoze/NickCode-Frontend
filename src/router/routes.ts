@@ -12,15 +12,18 @@ export const routes: Array<RouteRecordRaw> = [
   {
     path: "/user",
     name: "User",
+    meta: {
+      hideInMenu: true,
+    },
     component: UserLayout,
     children: [
       {
-        path: "user/login",
+        path: "/user/login",
         name: "User Login",
         component: UserLoginView,
       },
       {
-        path: "user/register",
+        path: "/user/register",
         name: "User Register",
         component: UserRegisterView,
       },
