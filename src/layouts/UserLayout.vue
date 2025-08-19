@@ -1,7 +1,12 @@
 <template>
   <div id="userLayout">
     <a-layout style="min-height: 100vh">
-      <a-layout-header class="header"> user Login </a-layout-header>
+      <a-layout-header class="header">
+        <a-space>
+          <img class="logo" src="../assets/Stardew_Chicken.png" />
+          <div>Becoze OJ</div>
+        </a-space>
+      </a-layout-header>
       <a-layout-content class="content">
         <router-view />
       </a-layout-content>
@@ -15,16 +20,15 @@
 
 <style scoped>
 #userLayout {
+  background: url(https://gw.alipayobjects.com/zos/rmsportal/FfdJeJRQWjEeGTpqgBKj.png);
+  text-align: center;
 }
 
 #userLayout .header {
-  box-shadow: #eee 1px 1px 5px;
-  height: 60px;
-  margin: 5px;
+  margin-top: 16px;
 }
 
 #userLayout .content {
-  background: linear-gradient(to right, #eee, #fff);
   margin-bottom: 16px;
   padding: 16px;
 }
