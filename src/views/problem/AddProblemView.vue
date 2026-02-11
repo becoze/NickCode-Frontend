@@ -116,12 +116,17 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { onMounted, ref } from "vue";
 import MdEditor from "@/components/MdEditor.vue";
 import message from "@arco-design/web-vue/es/message";
 import { ProblemControllerService } from "../../../generated";
+import { useRoute } from "vue-router";
 
-let form = reactive({
+const route = useRoute();
+// If the page address contains “update”, it shall be regarded as an "update page" page.
+const updatePage = route.path.includes("update");
+
+let form = ref({
   title: "",
   tags: [],
   answer: "",
@@ -139,34 +144,83 @@ let form = reactive({
   ],
 });
 
-// const doSubmit = async () => {
-//   console.log(form);
-// };
+/**
+ * Retrieve data via `getProblemByIdUsingGet`,
+ * then convert the data from JSON to JavaScript if they are not JSON,
+ * and finally display it using a `form`.
+ */
+const loadData = async () => {
+  const id = route.query.id;
+  if (!id) {
+    return;
+  }
+  const res = await ProblemControllerService.getProblemByIdUsingGet(id as any);
+  // load "input" and "output" data, convert Json format request response into js
+  if (res.code === 0) {
+    form.value = res.data as any;
+    if (!form.value.judgeCase) {
+      form.value.judgeCase = [
+        {
+          input: "",
+          output: "",
+        },
+      ];
+    } else {
+      form.value.judgeCase = JSON.parse(form.value.judgeCase as any);
+    }
+    // load "memoryLimit", "stackLimit" and "timeLimit" data, convert Json format request response into js
+    if (!form.value.judgeConfig) {
+      form.value.judgeConfig = {
+        memoryLimit: 1000,
+        timeLimit: 1000,
+        stackLimit: 1000,
+      };
+    } else {
+      form.value.judgeConfig = JSON.parse(form.value.judgeConfig as any);
+    }
+    // load "tags", convert Json format request response into js
+    if (!form.value.tags) {
+      form.value.tags = [];
+    } else {
+      form.value.tags = JSON.parse(form.value.tags as any);
+    }
+  } else {
+    message.error("error" + res.message);
+  }
+};
+
+onMounted(() => {
+  loadData();
+});
 
 const doSubmit = async () => {
-  console.log(form);
-  // if (updatePage) {
-  const res = await ProblemControllerService.addProblemUsingPost(form);
-  if (res.code === 0) {
-    message.success("更新成功");
+  console.log(form.value);
+  if (updatePage) {
+    // submit function for UPDATE
+    const res = await ProblemControllerService.updateProblemUsingPost(
+      form.value
+    );
+    if (res.code === 0) {
+      message.success("Successfully Update Problem");
+    } else {
+      message.error("Update Fail," + res.message);
+    }
   } else {
-    message.error("更新失败，" + res.message);
+    // submit function for ADD
+    const res = await ProblemControllerService.addProblemUsingPost(form.value);
+    if (res.code === 0) {
+      message.success("Successfully Add Problem");
+    } else {
+      message.error("Add Fail," + res.message);
+    }
   }
-  // } else {
-  //   const res = await ProblemControllerService.addProblemUsingPost(form);
-  //   if (res.code === 0) {
-  //     message.success("创建成功");
-  //   } else {
-  //     message.error("创建失败，" + res.message);
-  //   }
-  // }
 };
 
 /**
  * Add new judge case
  */
 const handleAdd = () => {
-  form.judgeCase.push({
+  form.value.judgeCase.push({
     input: "",
     output: "",
   });
@@ -176,15 +230,15 @@ const handleAdd = () => {
  * Delete judge case
  */
 const handleDelete = (index: number) => {
-  form.judgeCase.splice(index, 1);
+  form.value.judgeCase.splice(index, 1);
 };
 
 const onContentChange = (value: string) => {
-  form.content = value;
+  form.value.content = value;
 };
 
 const onAnswerChange = (value: string) => {
-  form.answer = value;
+  form.value.answer = value;
 };
 </script>
 
