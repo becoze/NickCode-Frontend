@@ -10,7 +10,7 @@ export default {
   state: () => ({
     loginUser: {
       userName: "Please Login",
-      userRole: ACCESS_ENUM.NOT_LOGIN,
+      // userRole: ACCESS_ENUM.NOT_LOGIN,
     },
   }),
 

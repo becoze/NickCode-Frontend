@@ -5,18 +5,20 @@ import checkAccess from "@/access/checkAccesss";
 import message from "@arco-design/web-vue/es/message";
 
 router.beforeEach(async (to, from, next) => {
-  const loginUser = store.state.user.loginUser;
+  let loginUser = store.state.user.loginUser;
   /**
    * Keep use logged in
    * userRole will only exist when user logged in before
    */
   if (!loginUser || !loginUser.userRole) {
     await store.dispatch("user/getLoginUser");
+    loginUser = store.state.user.loginUser;
   }
 
   /**
    * Manages user pages accessibility based on pages permissions.
    */
+  // console.log(loginUser);
   const pagePermission = (to.meta?.access as string) ?? ACCESS_ENUM.NOT_LOGIN;
   // Check if the page requires login
   if (pagePermission !== ACCESS_ENUM.NOT_LOGIN) {
@@ -26,7 +28,7 @@ router.beforeEach(async (to, from, next) => {
       !loginUser.userRole ||
       loginUser.userRole === ACCESS_ENUM.NOT_LOGIN
     ) {
-      message.warning("Please log in to access this page.");
+      // message.warning("Please log in to access this page.");
       next(`/user/login?redirect=${to.fullPath}`);
       return;
     }
