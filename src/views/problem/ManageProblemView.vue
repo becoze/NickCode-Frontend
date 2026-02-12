@@ -6,7 +6,7 @@
     :pagination="{
       showTotal: true,
       pageSize: searchParams.pageSize,
-      current: searchParams.currentPageNum,
+      current: searchParams.current,
       total,
     }"
     @page-change="onPageChange"
@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watchEffect } from "vue";
 import { Problem, ProblemControllerService } from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
 import { useRouter } from "vue-router";
@@ -29,8 +29,8 @@ import { useRouter } from "vue-router";
 const dataList = ref([]);
 const total = ref(0);
 const searchParams = ref({
-  pageSize: 10,
-  currentPageNum: 1,
+  pageSize: 10, // matched with backend "long pageSize"
+  current: 1, // matched with backend "long current"
 });
 
 const loadData = async () => {
@@ -44,6 +44,12 @@ const loadData = async () => {
     message.error("Data Load Error" + res.message);
   }
 };
+/**
+ * monitor searchParams change and do loadData()
+ */
+watchEffect(() => {
+  loadData();
+});
 
 /**
  * Load event
@@ -102,6 +108,13 @@ const columns = [
     slotName: "optional",
   },
 ];
+
+const onPageChange = (page: number) => {
+  searchParams.value = {
+    ...searchParams.value,
+    current: page,
+  };
+};
 
 const doDelete = async (problem: Problem) => {
   const res = await ProblemControllerService.deleteProblemUsingPost({
