@@ -1,6 +1,5 @@
 import { RouteRecordRaw } from "vue-router";
 import HomeView from "@/views/HomeView.vue";
-import AdminView from "@/views/AdminView.vue";
 import NoAuthView from "@/views/NoAuthView.vue";
 import ACCESS_ENUM from "@/access/accessEnum";
 import component from "*.vue";
@@ -41,15 +40,16 @@ export const routes: Array<RouteRecordRaw> = [
     name: "Add Problem",
     component: AddProblemView,
     meta: {
-      // access: ACCESS_ENUM.ADMIN, // admin, (user)
+      access: ACCESS_ENUM.ADMIN, // admin / user
     },
   },
   {
     path: "/update/problem",
-    name: "update Problem",
+    name: "Update Problem",
     component: AddProblemView,
     meta: {
-      // access: ACCESS_ENUM.ADMIN, // admin, (user)
+      access: ACCESS_ENUM.ADMIN, // admin / user
+      hideInMenu: true,
     },
   },
   {
@@ -57,17 +57,10 @@ export const routes: Array<RouteRecordRaw> = [
     name: "Manage Problem",
     component: ManageProblemView,
     meta: {
-      // access: ACCESS_ENUM.ADMIN, // admin, (user)
+      access: ACCESS_ENUM.ADMIN, // admin / user
     },
   },
-  {
-    path: "/admin",
-    name: "Admin Only",
-    component: AdminView,
-    meta: {
-      access: ACCESS_ENUM.ADMIN, // admin, (user)
-    },
-  },
+
   {
     path: "/noAuth",
     name: "No Auth",
