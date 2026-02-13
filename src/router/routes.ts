@@ -8,6 +8,7 @@ import UserRegisterView from "@/views/user/UserRegisterView.vue";
 import UserLayout from "@/layouts/UserLayout.vue";
 import AddProblemView from "@/views/problem/AddProblemView.vue";
 import ManageProblemView from "@/views/problem/ManageProblemView.vue";
+import ProblemsView from "@/views/problem/ProblemsView.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -31,9 +32,9 @@ export const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
-    path: "/",
-    name: "Problem",
-    component: HomeView,
+    path: "/problems",
+    name: "Problems",
+    component: ProblemsView,
   },
   {
     path: "/add/problem",
@@ -60,7 +61,6 @@ export const routes: Array<RouteRecordRaw> = [
       access: ACCESS_ENUM.ADMIN, // admin / user
     },
   },
-
   {
     path: "/noAuth",
     name: "No Auth",

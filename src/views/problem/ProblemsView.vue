@@ -1,40 +1,93 @@
 <template>
-  <div id="manageProblemView"></div>
-  <a-table
-    :columns="columns"
-    :data="dataList"
-    :pagination="{
-      showTotal: true,
-      pageSize: searchParams.pageSize,
-      current: searchParams.current,
-      total,
-    }"
-    @page-change="onPageChange"
-  >
-    <template #optional="{ record }">
-      <a-space>
-        <a-button type="primary" @click="doUpdate(record)">Edit</a-button>
-        <a-button status="danger" @click="doDelete(record)">Delete</a-button>
-      </a-space>
-    </template>
-  </a-table>
+  <div id="problemsView">
+    <a-divider size="0" />
+    <a-form :model="searchParams" layout="inline">
+      <a-form-item
+        field="title"
+        label="Search problems"
+        style="min-width: 360px"
+      >
+        <a-input v-model="searchParams.title" placeholder="e.g. Two Sum" />
+      </a-form-item>
+      <a-form-item field="tags" label="Search Tags" style="min-width: 300px">
+        <a-input-tag
+          v-model="searchParams.tags"
+          placeholder="e.g. tree, press [enter]"
+        />
+      </a-form-item>
+      <a-form-item>
+        <a-button type="primary" @click="doSubmit">Search problems</a-button>
+      </a-form-item>
+      <a-form-item>
+        <a-button @click="clearSearch">Clear search</a-button>
+      </a-form-item>
+    </a-form>
+    <a-divider size="0" />
+    <a-table
+      :columns="columns"
+      :data="dataList"
+      :pagination="{
+        showTotal: true,
+        pageSize: searchParams.pageSize,
+        current: searchParams.current,
+        total,
+      }"
+      @page-change="onPageChange"
+    >
+      <template #tags="{ record }">
+        <a-space wrap>
+          <a-tag v-for="(tag, index) of record.tags" :key="index" color="green"
+            >{{ tag }}
+          </a-tag>
+        </a-space>
+      </template>
+      <template #acceptedRate="{ record }">
+        {{
+          `${
+            record.submitNum ? record.acceptedNum / record.submitNum : "0"
+          }% (${record.acceptedNum} / ${record.submitNum})`
+        }}
+      </template>
+      <template #createTime="{ record }">
+        {{ moment(record.createTime).format("DD-MMM-YYYY") }}
+      </template>
+      <template #optional="{ record }">
+        <a-space>
+          <a-button type="primary" @click="toProblemPage(record)">Go!</a-button>
+        </a-space>
+      </template>
+    </a-table>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, watchEffect } from "vue";
-import { Problem, ProblemControllerService } from "../../../generated";
+import {
+  Problem,
+  ProblemControllerService,
+  ProblemQueryRequest,
+} from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
 import { useRouter } from "vue-router";
+import moment from "moment";
 
 const dataList = ref([]);
 const total = ref(0);
-const searchParams = ref({
-  pageSize: 10, // matched with backend "long pageSize"
+const searchParams = ref<ProblemQueryRequest>({
+  title: "",
+  tags: [],
+  pageSize: 15, // matched with backend "long pageSize"
   current: 1, // matched with backend "long current"
 });
+const defaultSearchParams = {
+  title: "",
+  tags: [],
+  pageSize: 15,
+  current: 1,
+};
 
 const loadData = async () => {
-  const res = await ProblemControllerService.listProblemByPageUsingPost(
+  const res = await ProblemControllerService.listProblemVoByPageUsingPost(
     searchParams.value
   );
   if (res.code === 0) {
@@ -60,51 +113,26 @@ onMounted(() => {
 
 const columns = [
   {
-    title: "id",
+    // title: "", // Problem Number
     dataIndex: "id",
   },
   {
-    title: "Title",
+    // title: "", // Problem Title
     dataIndex: "title",
   },
   {
-    title: "Content",
-    dataIndex: "content",
+    // title: "Tag",
+    slotName: "tags",
   },
   {
-    title: "Tag",
-    dataIndex: "tags",
+    // title: "acceptedRate",
+    slotName: "acceptedRate",
   },
   {
-    title: "Answer",
-    dataIndex: "answer",
+    // title: "Create Time",
+    slotName: "createTime",
   },
   {
-    title: "Number Submitted",
-    dataIndex: "submitNum",
-  },
-  {
-    title: "Number Passed",
-    dataIndex: "acceptedNum",
-  },
-  {
-    title: "Judge Config",
-    dataIndex: "judgeConfig",
-  },
-  {
-    title: "Judge Case",
-    dataIndex: "judgeCase",
-  },
-  {
-    title: "User Id",
-    dataIndex: "userId",
-  },
-  {
-    title: "Create Time",
-    dataIndex: "createTime",
-  },
-  {
-    title: "",
     slotName: "optional",
   },
 ];
@@ -116,31 +144,36 @@ const onPageChange = (page: number) => {
   };
 };
 
-const doDelete = async (problem: Problem) => {
-  const res = await ProblemControllerService.deleteProblemUsingPost({
-    id: problem.id,
-  });
-  if (res.code === 0) {
-    message.success("Delete Successful");
-    loadData();
-  } else {
-    message.error("Delete Fail");
-  }
-};
-
+/**
+ * Redirect to Problem page
+ * @param problem
+ */
 const router = useRouter();
 
-const doUpdate = (problem: Problem) => {
+const toProblemPage = (problem: Problem) => {
   router.push({
-    path: "/update/problem",
-    query: {
-      id: problem.id,
-    },
+    path: `/view/problem/${problem.id}`,
   });
+};
+
+const doSubmit = () => {
+  // reset page to 1
+  searchParams.value = {
+    ...searchParams.value,
+    current: 1,
+  };
+};
+
+const clearSearch = () => {
+  searchParams.value = {
+    ...defaultSearchParams,
+  };
 };
 </script>
 
 <style scoped>
-#manageProblemView {
+#problemsView {
+  max-width: 1280px;
+  margin: 0 auto;
 }
 </style>
