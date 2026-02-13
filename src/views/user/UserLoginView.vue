@@ -67,6 +67,6 @@ const handleSubmit = async () => {
   } else {
     message.error("Login fail" + res.message);
   }
-  alert(JSON.stringify(form));
+  // alert(JSON.stringify(form));
 };
 </script>
