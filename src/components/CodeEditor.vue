@@ -1,14 +1,16 @@
 <template>
   <!-- Main container for the code editor component -->
-  <div id="code-editor" ref="codeEditorRef" style="min-height: 400px" />
-  <!-- Button to trigger the fillValue function -->
-  <!--  <a-button @change="">submit</a-button>-->
+  <div
+    id="code-editor"
+    ref="codeEditorRef"
+    style="min-height: 400px; height: 70vh"
+  />
 </template>
 
 <script setup lang="ts">
 // Import Monaco Editor and Vue composition API
 import * as monaco from "monaco-editor";
-import { onMounted, ref, toRaw, withDefaults, defineProps } from "vue";
+import { onMounted, ref, toRaw, withDefaults, defineProps, watch } from "vue";
 
 /**
  * Interface defining the component properties types
@@ -37,6 +39,18 @@ const codeEditorRef = ref();
 // Reference to the Monaco Editor instance
 const codeEditor = ref();
 
+watch(
+  () => props.language,
+  () => {
+    if (codeEditor.value) {
+      monaco.editor.setModelLanguage(
+        toRaw(codeEditor.value).getModel(),
+        props.language
+      );
+    }
+  }
+);
+
 /**
  * Lifecycle hook that runs after the component is mounted
  * Initializes the Monaco Editor with specified configuration
@@ -48,7 +62,7 @@ onMounted(() => {
   // Create and configure the Monaco Editor instance
   codeEditor.value = monaco.editor.create(codeEditorRef.value, {
     value: props.value,
-    language: "java",
+    language: props.language,
     automaticLayout: true,
     minimap: {
       enabled: true,
