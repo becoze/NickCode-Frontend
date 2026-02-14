@@ -61,12 +61,11 @@ const handleSubmit = async () => {
   if (res.code === 0) {
     await store.dispatch("user/getLoginUser");
     router.push({
-      path: "/",
+      path: "/problems",
       replace: true,
     });
   } else {
     message.error("Login fail" + res.message);
   }
-  // alert(JSON.stringify(form));
 };
 </script>
