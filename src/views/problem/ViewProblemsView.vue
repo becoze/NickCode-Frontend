@@ -1,108 +1,117 @@
 <template>
-  <div id="problemsView">
-    <a-divider size="0" />
-    <a-form :model="searchParams" layout="inline">
-      <a-form-item
-        field="title"
-        label="Search problems"
-        style="min-width: 360px"
-      >
-        <a-input v-model="searchParams.title" placeholder="e.g. Two Sum" />
-      </a-form-item>
-      <a-form-item field="tags" label="Search Tags" style="min-width: 300px">
-        <a-input-tag
-          v-model="searchParams.tags"
-          placeholder="e.g. tree, press [enter]"
-        />
-      </a-form-item>
-      <a-form-item>
-        <a-button type="primary" @click="doSubmit">Search problems</a-button>
-      </a-form-item>
-      <a-form-item>
-        <a-button @click="clearSearch">Clear search</a-button>
-      </a-form-item>
-    </a-form>
-    <a-divider size="0" />
-    <a-table
-      :columns="columns"
-      :data="dataList"
-      :pagination="{
-        showTotal: true,
-        pageSize: searchParams.pageSize,
-        current: searchParams.current,
-        total,
-      }"
-      @page-change="onPageChange"
-    >
-      <template #tags="{ record }">
-        <a-space wrap>
-          <a-tag v-for="(tag, index) of record.tags" :key="index" color="green"
-            >{{ tag }}
-          </a-tag>
-        </a-space>
-      </template>
-      <template #acceptedRate="{ record }">
-        {{
-          `${
-            record.submitNum ? record.acceptedNum / record.submitNum : "0"
-          }% (${record.acceptedNum} / ${record.submitNum})`
-        }}
-      </template>
-      <template #createTime="{ record }">
-        {{ moment(record.createTime).format("DD-MMM-YYYY") }}
-      </template>
-      <template #optional="{ record }">
-        <a-space>
-          <a-button type="primary" @click="toProblemPage(record)">Go!</a-button>
-        </a-space>
-      </template>
-    </a-table>
+  <div id="viewProblemsView">
+    <a-row :gutter="[24, 24]">
+      <a-col :md="12" :xs="24">
+        <a-tabs default-active-key="problem">
+          <a-tab-pane key="problem" title="Problem">
+            <a-card v-if="problem" :title="problem.title">
+              <MdViewer :value="problem.content || ''" />
+              <a-descriptions title="Pass Limit" :column="{ xs: 1 }">
+                <a-descriptions-item label="Time Limit">
+                  {{ problem.judgeConfig.timeLimit ?? 0 }}
+                </a-descriptions-item>
+                <a-descriptions-item label="Memory Limit">
+                  {{ problem.judgeConfig.memoryLimit ?? 0 }}
+                </a-descriptions-item>
+              </a-descriptions>
+              <template #extra>
+                <a-space wrap>
+                  <a-tag
+                    v-for="(tag, index) of problem.tags"
+                    :key="index"
+                    color="green"
+                    >{{ tag }}
+                  </a-tag>
+                </a-space>
+              </template>
+            </a-card>
+          </a-tab-pane>
+          <a-tab-pane key="answer" title="Answer"> Answer</a-tab-pane>
+        </a-tabs>
+      </a-col>
+      <a-col :md="12" :xs="24">
+        <a-tabs default-active-key="code">
+          <template #extra>
+            <a-form :model="form" layout="inline" style="margin-bottom: -6px">
+              <a-form-item field="language" style="min-width: 100px">
+                <a-select v-model="form.language" :style="{ width: '100px' }">
+                  <a-option>java</a-option>
+                  <a-option>cpp</a-option>
+                  <a-option>go</a-option>
+                  <a-option>html</a-option>
+                </a-select>
+              </a-form-item>
+            </a-form>
+            <a-button type="primary" style="min-width: 150px" @click="doSubmit"
+              >Submit
+            </a-button>
+          </template>
+          <a-tab-pane key="code" title="Code">
+            <CodeEditor
+              :value="form.code"
+              :language="form.language"
+              :handle-change="changeCode"
+            />
+          </a-tab-pane>
+        </a-tabs>
+      </a-col>
+    </a-row>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watchEffect } from "vue";
+import { onMounted, ref, withDefaults, defineProps } from "vue";
 import {
-  Problem,
   ProblemControllerService,
-  ProblemQueryRequest,
+  ProblemSubmitAddRequest,
+  ProblemSubmitControllerService,
+  ProblemVO,
 } from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
-import { useRouter } from "vue-router";
-import moment from "moment";
+import CodeEditor from "@/components/CodeEditor.vue";
+import MdViewer from "@/components/MdViewer.vue";
 
-const dataList = ref([]);
-const total = ref(0);
-const searchParams = ref<ProblemQueryRequest>({
-  title: "",
-  tags: [],
-  pageSize: 15, // matched with backend "long pageSize"
-  current: 1, // matched with backend "long current"
+interface Props {
+  id: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  id: () => "",
 });
-const defaultSearchParams = {
-  title: "",
-  tags: [],
-  pageSize: 15,
-  current: 1,
-};
+
+const problem = ref<ProblemVO>();
 
 const loadData = async () => {
-  const res = await ProblemControllerService.listProblemVoByPageUsingPost(
-    searchParams.value
+  const res = await ProblemControllerService.getProblemVoByIdUsingGet(
+    props.id as any
   );
   if (res.code === 0) {
-    dataList.value = res.data.records;
-    total.value = res.data.total;
+    problem.value = res.data;
   } else {
     message.error("Data Load Error" + res.message);
   }
 };
-/**
- * monitor searchParams change and do loadData()
- */
-watchEffect(() => {
-  loadData();
+
+const form = ref<ProblemSubmitAddRequest>({
+  language: "java",
+  code: "",
 });
+
+const doSubmit = async () => {
+  if (!problem.value?.id) {
+    return;
+  }
+
+  const res = await ProblemSubmitControllerService.doProblemSubmitUsingPost({
+    ...form.value,
+    problemId: problem.value.id,
+  });
+  if (res.code === 0) {
+    message.success("Submit Success");
+  } else {
+    message.error("Submit Fail" + res.message);
+  }
+};
 
 /**
  * Load event
@@ -111,69 +120,16 @@ onMounted(() => {
   loadData();
 });
 
-const columns = [
-  {
-    // title: "", // Problem Number
-    dataIndex: "id",
-  },
-  {
-    // title: "", // Problem Title
-    dataIndex: "title",
-  },
-  {
-    // title: "Tag",
-    slotName: "tags",
-  },
-  {
-    // title: "acceptedRate",
-    slotName: "acceptedRate",
-  },
-  {
-    // title: "Create Time",
-    slotName: "createTime",
-  },
-  {
-    slotName: "optional",
-  },
-];
-
-const onPageChange = (page: number) => {
-  searchParams.value = {
-    ...searchParams.value,
-    current: page,
-  };
-};
-
-/**
- * Redirect to Problem page
- * @param problem
- */
-const router = useRouter();
-
-const toProblemPage = (problem: Problem) => {
-  router.push({
-    path: `/view/problem/${problem.id}`,
-  });
-};
-
-const doSubmit = () => {
-  // reset page to 1
-  searchParams.value = {
-    ...searchParams.value,
-    current: 1,
-  };
-};
-
-const clearSearch = () => {
-  searchParams.value = {
-    ...defaultSearchParams,
-  };
+const changeCode = (value: string) => {
+  form.value.code = value;
 };
 </script>
 
-<style scoped>
-#problemsView {
-  max-width: 1280px;
-  margin: 0 auto;
+<style>
+#viewProblemsView {
+}
+
+#viewProblemsView .arco-space-horizontal .arco-space-item {
+  margin-bottom: 0 !important;
 }
 </style>

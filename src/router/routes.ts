@@ -9,6 +9,7 @@ import UserLayout from "@/layouts/UserLayout.vue";
 import AddProblemView from "@/views/problem/AddProblemView.vue";
 import ManageProblemView from "@/views/problem/ManageProblemView.vue";
 import ProblemsView from "@/views/problem/ProblemsView.vue";
+import ViewProblemsView from "@/views/problem/ViewProblemsView.vue";
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -35,6 +36,16 @@ export const routes: Array<RouteRecordRaw> = [
     path: "/problems",
     name: "Problems",
     component: ProblemsView,
+  },
+  {
+    path: "/view/problem/:id",
+    name: "View Problem",
+    component: ViewProblemsView,
+    props: true,
+    meta: {
+      access: ACCESS_ENUM.ADMIN, // admin / user
+      hideInMenu: true,
+    },
   },
   {
     path: "/add/problem",
