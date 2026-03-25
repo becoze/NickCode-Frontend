@@ -2,10 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { LoginUserVO } from './LoginUserVO';
-export type BaseResponse_LoginUserVO_ = {
+import type { Page_Problem_ } from './Page_Problem_';
+export type BaseResponse_Page_Problem_ = {
     code?: number;
-    data?: LoginUserVO;
+    data?: Page_Problem_;
     message?: string;
 };
 
