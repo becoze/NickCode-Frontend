@@ -64,7 +64,6 @@ import { onMounted, ref, withDefaults, defineProps } from "vue";
 import {
   ProblemControllerService,
   ProblemSubmitAddRequest,
-  ProblemSubmitControllerService,
   ProblemVO,
 } from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
@@ -102,7 +101,7 @@ const doSubmit = async () => {
     return;
   }
 
-  const res = await ProblemSubmitControllerService.doProblemSubmitUsingPost({
+  const res = await ProblemControllerService.doProblemSubmitUsingPost({
     ...form.value,
     problemId: problem.value.id,
   });
