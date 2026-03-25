@@ -3,14 +3,26 @@
     <a-divider size="0" />
     <a-form :model="searchParams" layout="inline">
       <a-form-item
-        field="title"
-        label="Search problems"
+        field="problem id"
+        label="Search problem id"
         style="min-width: 360px"
       >
-        <a-input v-model="searchParams.title" placeholder="e.g. Two Sum" />
+        <a-input v-model="searchParams.problemId" />
+      </a-form-item>
+      <a-form-item
+        field="language"
+        label="Search language"
+        style="min-width: 100px"
+      >
+        <a-select v-model="searchParams.language" :style="{ width: '100px' }">
+          <a-option>java</a-option>
+          <a-option>cpp</a-option>
+          <a-option>go</a-option>
+          <a-option>html</a-option>
+        </a-select>
       </a-form-item>
       <a-form-item>
-        <a-button type="primary" @click="doSubmit">Search problems</a-button>
+        <a-button type="primary" @click="doSubmit">Search</a-button>
       </a-form-item>
       <a-form-item>
         <a-button @click="clearSearch">Clear search</a-button>
@@ -28,27 +40,11 @@
       }"
       @page-change="onPageChange"
     >
-      <template #tags="{ record }">
-        <a-space wrap>
-          <a-tag v-for="(tag, index) of record.tags" :key="index" color="green"
-            >{{ tag }}
-          </a-tag>
-        </a-space>
-      </template>
-      <template #acceptedRate="{ record }">
-        {{
-          `${
-            record.submitNum ? record.acceptedNum / record.submitNum : "0"
-          }% (${record.acceptedNum} / ${record.submitNum})`
-        }}
-      </template>
       <template #createTime="{ record }">
-        {{ moment(record.createTime).format("DD-MMM-YYYY") }}
+        {{ moment(record.createTime).format("hh:mm a, DD-MMM-YYYY") }}
       </template>
-      <template #optional="{ record }">
-        <a-space>
-          <a-button type="primary" @click="toProblemPage(record)">Go!</a-button>
-        </a-space>
+      <template #judgeInfo="{ record }">
+        {{ JSON.stringify(record.judgeInfo) }}
       </template>
     </a-table>
   </div>
@@ -59,7 +55,7 @@ import { onMounted, ref, watchEffect } from "vue";
 import {
   Problem,
   ProblemControllerService,
-  ProblemQueryRequest,
+  ProblemSubmitQueryRequest,
 } from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
 import { useRouter } from "vue-router";
@@ -67,29 +63,32 @@ import moment from "moment";
 
 const dataList = ref([]);
 const total = ref(0);
-const searchParams = ref<ProblemQueryRequest>({
-  title: "",
-  tags: [],
+const searchParams = ref<ProblemSubmitQueryRequest>({
+  problemId: undefined,
+  language: undefined,
   pageSize: 15, // matched with backend "long pageSize"
   current: 1, // matched with backend "long current"
 });
+const loadData = async () => {
+  const res = await ProblemControllerService.listProblemSubmitByPageUsingPost({
+    ...searchParams.value,
+    sortField: "createTime",
+    sortOrder: "desc",
+  });
+  // TODO show only my own submission (now is showing everything)
+  if (res.code === 0) {
+    dataList.value = res.data.records;
+    total.value = res.data.total;
+  } else {
+    message.error("Data Load Error " + res.message);
+  }
+};
+
 const defaultSearchParams = {
   title: "",
   tags: [],
   pageSize: 15,
   current: 1,
-};
-
-const loadData = async () => {
-  const res = await ProblemControllerService.listProblemSubmitByPageUsingPost(
-    searchParams.value
-  );
-  if (res.code === 0) {
-    dataList.value = res.data.records;
-    total.value = res.data.total;
-  } else {
-    message.error("Data Load Error" + res.message);
-  }
 };
 /**
  * monitor searchParams change and do loadData()
@@ -107,27 +106,30 @@ onMounted(() => {
 
 const columns = [
   {
-    // title: "", // Problem Number
+    title: "ID", // Problem Number
     dataIndex: "id",
   },
   {
-    // title: "",
+    title: "Language",
     dataIndex: "language",
   },
   {
-    // title: "",
+    title: "Judge info",
+    dataIndex: "judgeInfo",
     slotName: "judgeInfo",
   },
   {
-    // title: "",
-    slotName: "title",
+    title: "Problem id",
+    dataIndex: "problemId",
   },
   {
-    // title: "",
-    slotName: "status",
+    title: "Status",
+    dataIndex: "status",
+    // TODO refresh status every 10 seconds
   },
   {
-    // title: "Create Time",
+    title: "Create Time",
+    dataIndex: "createTime",
     slotName: "createTime",
   },
 ];
