@@ -17,14 +17,36 @@
         <a-button status="danger" @click="doDelete(record)">Delete</a-button>
       </a-space>
     </template>
+    <template #createTime="{ record }">
+      {{ moment(record.createTime).format("hh:mm a, DD-MMM-YYYY") }}
+    </template>
+    <template #tags="{ record }">
+      <a-space wrap>
+        <a-tag
+          v-for="(tag, index) in formatTags(record.tags)"
+          :key="index"
+          color="green"
+          >{{ tag }}
+        </a-tag>
+      </a-space>
+    </template>
+    <template #userName="{ record }">
+      {{ userNameMap[record.userId] ?? "Loading..." }}
+    </template>
   </a-table>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watchEffect } from "vue";
-import { Problem, ProblemControllerService } from "../../../generated";
+import { onMounted, reactive, ref, watchEffect } from "vue";
+import {
+  Problem,
+  ProblemControllerService,
+  ProblemQueryRequest,
+  UserControllerService,
+} from "../../../generated";
 import message from "@arco-design/web-vue/es/message";
 import { useRouter } from "vue-router";
+import moment from "moment/moment";
 
 const dataList = ref([]);
 const total = ref(0);
@@ -33,6 +55,45 @@ const searchParams = ref({
   current: 1, // matched with backend "long current"
 });
 
+// Turn JSON to String for "tags" variable
+const formatTags = (tags: any): string[] => {
+  if (!tags) return [];
+
+  // case 1: already array
+  if (Array.isArray(tags)) return tags;
+
+  // case 2: string → parse JSON
+  try {
+    return JSON.parse(tags);
+  } catch (e) {
+    // fallback: "a,b,c" → ["a","b","c"]
+    return tags.split(",");
+  }
+};
+
+const userNameMap = reactive<Record<string, string>>({});
+const loadUserNames = async (records: any[]) => {
+  const userIds = [
+    ...new Set(records.map((item) => item.userId).filter(Boolean)),
+  ];
+
+  for (const userId of userIds) {
+    // skip if already loaded
+    if (userNameMap[userId]) continue;
+
+    try {
+      const res = await UserControllerService.getUserByIdUsingGet(userId);
+      if (res.code === 0 && res.data) {
+        userNameMap[userId] = res.data.userName;
+      } else {
+        userNameMap[userId] = "Unknown";
+      }
+    } catch (error) {
+      userNameMap[userId] = "Unknown";
+    }
+  }
+};
+
 const loadData = async () => {
   const res = await ProblemControllerService.listProblemByPageUsingPost(
     searchParams.value
@@ -40,6 +101,7 @@ const loadData = async () => {
   if (res.code === 0) {
     dataList.value = res.data.records;
     total.value = res.data.total;
+    await loadUserNames(res.data.records || []);
   } else {
     message.error("Data Load Error" + res.message);
   }
@@ -67,17 +129,13 @@ const columns = [
     title: "Title",
     dataIndex: "title",
   },
+  // {
+  //   title: "Content",
+  //   dataIndex: "content",
+  // },
   {
-    title: "Content",
-    dataIndex: "content",
-  },
-  {
-    title: "Tag",
-    dataIndex: "tags",
-  },
-  {
-    title: "Answer",
-    dataIndex: "answer",
+    title: "Tags",
+    slotName: "tags",
   },
   {
     title: "Number Submitted",
@@ -92,16 +150,14 @@ const columns = [
     dataIndex: "judgeConfig",
   },
   {
-    title: "Judge Case",
-    dataIndex: "judgeCase",
-  },
-  {
-    title: "User Id",
+    title: "User name",
     dataIndex: "userId",
+    slotName: "userName",
   },
   {
     title: "Create Time",
     dataIndex: "createTime",
+    slotName: "createTime",
   },
   {
     title: "",
