@@ -9,25 +9,25 @@
       @submit="handleSubmit"
     >
       <a-form-item field="userAccount" label="User account">
-        <a-input
-          v-model="form.userAccount"
-          placeholder="please enter your User account..."
-        />
+        <a-input v-model="form.userAccount" placeholder="User name" />
       </a-form-item>
-      <a-form-item
-        field="userPassword"
-        label="Password"
-        tooltip="Password at least 8 characters"
-      >
-        <a-input-password
-          v-model="form.userPassword"
-          placeholder="please enter your Password..."
-        />
+      <a-form-item field="userPassword" label="Password">
+        <a-input-password v-model="form.userPassword" placeholder="Password" />
       </a-form-item>
       <a-form-item>
-        <a-button type="primary" html-type="submit" style="width: 120px"
-          >Login</a-button
+        <a-button type="primary" html-type="" style="width: 120px"
+          >Login
+        </a-button>
+      </a-form-item>
+      <a-form-item>
+        <a-button
+          type="secondary"
+          html-type="submit"
+          style="width: 140px"
+          @click="redirectHome"
         >
+          Back to Home
+        </a-button>
       </a-form-item>
     </a-form>
   </div>
@@ -59,13 +59,20 @@ const handleSubmit = async () => {
   const res = await UserControllerService.userLoginUsingPost(form);
   // redirect to Home page when success
   if (res.code === 0) {
+    message.success("Login successful");
     await store.dispatch("user/getLoginUser");
     router.push({
       path: "/problems",
       replace: true,
     });
   } else {
-    message.error("Login fail" + res.message);
+    message.error("Login fail " + res.message);
   }
+};
+const redirectHome = () => {
+  router.push({
+    path: "/problems",
+    replace: true,
+  });
 };
 </script>
