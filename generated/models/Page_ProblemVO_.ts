@@ -2,18 +2,17 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { OrderItem } from './OrderItem';
-import type { ProblemVO } from './ProblemVO';
+import type { OrderItem } from "./OrderItem";
+import type { ProblemVO } from "./ProblemVO";
 export type Page_ProblemVO_ = {
-    countId?: string;
-    current?: number;
-    maxLimit?: number;
-    optimizeCountSql?: boolean;
-    orders?: Array<OrderItem>;
-    pages?: number;
-    records?: Array<ProblemVO>;
-    searchCount?: boolean;
-    size?: number;
-    total?: number;
+  countId?: string;
+  current?: number;
+  maxLimit?: number;
+  optimizeCountSql?: boolean;
+  orders?: Array<OrderItem>;
+  pages?: number;
+  records?: Array<ProblemVO>;
+  searchCount?: boolean;
+  size?: number;
+  total?: number;
 };
-

@@ -10,7 +10,6 @@
       <a-layout-content class="content">
         <router-view />
       </a-layout-content>
-
       <a-layout-footer class="footer">
         <a href="https://becoze.github.io/wiki" target="_blank"> Becoze </a>
       </a-layout-footer>

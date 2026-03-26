@@ -3,8 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ProblemSubmitAddRequest = {
-    code?: string;
-    language?: string;
-    problemId?: number;
+  code?: string;
+  language?: string;
+  problemId?: number;
 };
-

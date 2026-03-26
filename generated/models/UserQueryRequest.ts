@@ -3,13 +3,12 @@
 /* tslint:disable */
 /* eslint-disable */
 export type UserQueryRequest = {
-    current?: number;
-    id?: number;
-    pageSize?: number;
-    sortField?: string;
-    sortOrder?: string;
-    userName?: string;
-    userProfile?: string;
-    userRole?: string;
+  current?: number;
+  id?: number;
+  pageSize?: number;
+  sortField?: string;
+  sortOrder?: string;
+  userName?: string;
+  userProfile?: string;
+  userRole?: string;
 };
-
