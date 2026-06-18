@@ -1,62 +1,97 @@
 <template>
   <div id="problemsView">
-    <a-divider size="0" />
-    <a-form :model="searchParams" layout="inline">
-      <a-form-item
-        field="title"
-        label="Search problems"
-        style="min-width: 360px"
-      >
-        <a-input v-model="searchParams.title" placeholder="e.g. Two Sum" />
-      </a-form-item>
-      <a-form-item field="tags" label="Search Tags" style="min-width: 300px">
-        <a-input-tag
-          v-model="searchParams.tags"
-          placeholder="e.g. tree, press [enter]"
-        />
-      </a-form-item>
-      <a-form-item>
-        <a-button type="primary" @click="doSubmit">Search problems</a-button>
-      </a-form-item>
-      <a-form-item>
-        <a-button @click="clearSearch">Clear search</a-button>
-      </a-form-item>
-    </a-form>
-    <a-divider size="0" />
-    <a-table
-      :columns="columns"
-      :data="dataList"
-      :pagination="{
-        showTotal: true,
-        pageSize: searchParams.pageSize,
-        current: searchParams.current,
-        total,
-      }"
-      @page-change="onPageChange"
-    >
-      <template #tags="{ record }">
-        <a-space wrap>
-          <a-tag v-for="(tag, index) of record.tags" :key="index" color="green"
-            >{{ tag }}
-          </a-tag>
-        </a-space>
-      </template>
-      <template #acceptedRate="{ record }">
-        {{
-          `${
-            record.submitNum ? record.acceptedNum / record.submitNum : "0"
-          }% (${record.acceptedNum} / ${record.submitNum})`
-        }}
-      </template>
-      <template #createTime="{ record }">
-        {{ moment(record.createTime).format("DD-MMM-YYYY") }}
-      </template>
-      <template #optional="{ record }">
-        <a-space>
-          <a-button type="primary" @click="toProblemPage(record)">Go!</a-button>
-        </a-space>
-      </template>
-    </a-table>
+    <section class="d-panel d-reg">
+      <header class="d-panel__head">
+        <div class="d-panel__title">
+          <span class="d-label">Problem Set</span>
+          <span class="d-code">DB // PROBLEMS</span>
+        </div>
+        <span class="d-code">TOTAL: {{ total }}</span>
+      </header>
+
+      <div class="d-panel__body">
+        <a-form :model="searchParams" layout="inline" class="search-bar">
+          <a-form-item
+            field="title"
+            label="Search problems"
+            style="min-width: 360px"
+          >
+            <a-input v-model="searchParams.title" placeholder="e.g. Two Sum" />
+          </a-form-item>
+          <a-form-item
+            field="tags"
+            label="Search Tags"
+            style="min-width: 300px"
+          >
+            <a-input-tag
+              v-model="searchParams.tags"
+              placeholder="e.g. tree, press [enter]"
+            />
+          </a-form-item>
+          <a-form-item>
+            <a-button type="primary" @click="doSubmit"
+              >Search problems</a-button
+            >
+          </a-form-item>
+          <a-form-item>
+            <a-button @click="clearSearch">Clear search</a-button>
+          </a-form-item>
+        </a-form>
+
+        <a-table
+          :columns="columns"
+          :data="dataList"
+          :pagination="{
+            showTotal: true,
+            pageSize: searchParams.pageSize,
+            current: searchParams.current,
+            total,
+          }"
+          @page-change="onPageChange"
+        >
+          <template #title="{ record }">
+            <div class="problem-title-cell">
+              <span class="problem-title-cell__title">{{ record.title }}</span>
+              <span class="problem-title-cell__id">{{ record.id }}</span>
+            </div>
+          </template>
+          <template #tags="{ record }">
+            <a-space wrap>
+              <a-tag
+                v-for="(tag, index) of record.tags"
+                :key="index"
+                color="green"
+                >{{ tag }}
+              </a-tag>
+            </a-space>
+          </template>
+          <template #acceptedRate="{ record }">
+            <span class="d-mono-cell">
+              {{
+                `${
+                  record.submitNum ? record.acceptedNum / record.submitNum : "0"
+                }% (${record.acceptedNum} / ${record.submitNum})`
+              }}
+            </span>
+          </template>
+          <template #createTime="{ record }">
+            <span class="d-mono-cell">{{
+              moment(record.createTime).format("DD-MMM-YYYY")
+            }}</span>
+          </template>
+          <template #optional="{ record }">
+            <a-space>
+              <a-button
+                type="primary"
+                size="small"
+                @click="toProblemPage(record)"
+                >Solve</a-button
+              >
+            </a-space>
+          </template>
+        </a-table>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -113,27 +148,26 @@ onMounted(() => {
 
 const columns = [
   {
-    // title: "", // Problem Number
-    dataIndex: "id",
-  },
-  {
-    // title: "", // Problem Title
+    title: "Title",
     dataIndex: "title",
+    slotName: "title",
   },
   {
-    // title: "Tag",
+    title: "Tags",
     slotName: "tags",
   },
   {
-    // title: "acceptedRate",
+    title: "Accepted",
     slotName: "acceptedRate",
   },
   {
-    // title: "Create Time",
+    title: "Created",
     slotName: "createTime",
   },
   {
+    title: "",
     slotName: "optional",
+    width: 110,
   },
 ];
 
@@ -175,5 +209,29 @@ const clearSearch = () => {
 #problemsView {
   max-width: 1280px;
   margin: 0 auto;
+}
+
+.search-bar {
+  margin-bottom: var(--d-space-4);
+  padding-bottom: var(--d-space-4);
+  border-bottom: 1px solid var(--d-line);
+}
+
+.problem-title-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.problem-title-cell__title {
+  font-size: 14px;
+}
+
+.problem-title-cell__id {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--d-ink-muted);
+  user-select: all;
 }
 </style>

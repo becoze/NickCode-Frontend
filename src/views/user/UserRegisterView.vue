@@ -1,11 +1,13 @@
 <template>
   <div class="userRegister">
-    <h1 style="margin-bottom: 16px">Register</h1>
+    <div class="form-head">
+      <span class="d-kicker">SESSION // ENROLL</span>
+      <h1 class="form-title">Register</h1>
+    </div>
     <a-form
       auto-label-width
       label-align="left"
       :model="form"
-      style="max-width: 480px; margin: 0 auto"
       @submit="handleSubmit"
     >
       <a-form-item field="userAccount" label="User account">
@@ -39,15 +41,17 @@
         />
       </a-form-item>
       <a-form-item>
-        <a-button type="primary" html-type="submit" style="width: 120px"
-          >Register
-        </a-button>
+        <a-button type="primary" html-type="submit" long>Register </a-button>
       </a-form-item>
       <a-form-item>
-        <a-button type="secondary" style="width: 140px" @click="goToHome">
+        <a-button type="secondary" long @click="goToHome">
           Back to Home
         </a-button>
       </a-form-item>
+      <div class="form-switch">
+        <span>Already have an account?</span>
+        <a-link @click="goToLogin">Login</a-link>
+      </div>
     </a-form>
   </div>
 </template>
@@ -110,4 +114,32 @@ const goToHome = () => {
     replace: true,
   });
 };
+const goToLogin = () => {
+  router.push({
+    path: "/user/login",
+  });
+};
 </script>
+
+<style scoped>
+.form-head {
+  margin-bottom: var(--d-space-5);
+}
+
+.form-title {
+  margin: var(--d-space-1) 0 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--d-ink);
+}
+
+.form-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--d-space-2);
+  margin-top: var(--d-space-3);
+  font-size: 13px;
+  color: var(--d-ink-muted);
+}
+</style>

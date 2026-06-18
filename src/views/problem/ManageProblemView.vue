@@ -1,39 +1,58 @@
 <template>
-  <div id="manageProblemView"></div>
-  <a-table
-    :columns="columns"
-    :data="dataList"
-    :pagination="{
-      showTotal: true,
-      pageSize: searchParams.pageSize,
-      current: searchParams.current,
-      total,
-    }"
-    @page-change="onPageChange"
-  >
-    <template #optional="{ record }">
-      <a-space>
-        <a-button type="primary" @click="doUpdate(record)">Edit</a-button>
-        <a-button status="danger" @click="doDelete(record)">Delete</a-button>
-      </a-space>
-    </template>
-    <template #createTime="{ record }">
-      {{ moment(record.createTime).format("hh:mm a, DD-MMM-YYYY") }}
-    </template>
-    <template #tags="{ record }">
-      <a-space wrap>
-        <a-tag
-          v-for="(tag, index) in formatTags(record.tags)"
-          :key="index"
-          color="green"
-          >{{ tag }}
-        </a-tag>
-      </a-space>
-    </template>
-    <template #userName="{ record }">
-      {{ userNameMap[record.userId] ?? "Loading..." }}
-    </template>
-  </a-table>
+  <div id="manageProblemView">
+    <section class="d-panel d-reg">
+      <header class="d-panel__head">
+        <div class="d-panel__title">
+          <span class="d-label">Manage Problems</span>
+          <span class="d-code">ADMIN // PROBLEMS</span>
+        </div>
+        <span class="d-code">TOTAL: {{ total }}</span>
+      </header>
+
+      <div class="d-panel__body">
+        <a-table
+          :columns="columns"
+          :data="dataList"
+          :pagination="{
+            showTotal: true,
+            pageSize: searchParams.pageSize,
+            current: searchParams.current,
+            total,
+          }"
+          @page-change="onPageChange"
+        >
+          <template #optional="{ record }">
+            <a-space>
+              <a-button type="primary" size="small" @click="doUpdate(record)"
+                >Edit</a-button
+              >
+              <a-button status="danger" size="small" @click="doDelete(record)"
+                >Delete</a-button
+              >
+            </a-space>
+          </template>
+          <template #createTime="{ record }">
+            <span class="d-mono-cell">{{
+              moment(record.createTime).format("hh:mm a, DD-MMM-YYYY")
+            }}</span>
+          </template>
+          <template #tags="{ record }">
+            <a-space wrap>
+              <a-tag
+                v-for="(tag, index) in formatTags(record.tags)"
+                :key="index"
+                color="green"
+                >{{ tag }}
+              </a-tag>
+            </a-space>
+          </template>
+          <template #userName="{ record }">
+            {{ userNameMap[record.userId] ?? "Loading..." }}
+          </template>
+        </a-table>
+      </div>
+    </section>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -198,5 +217,7 @@ const doUpdate = (problem: Problem) => {
 
 <style scoped>
 #manageProblemView {
+  max-width: 1280px;
+  margin: 0 auto;
 }
 </style>

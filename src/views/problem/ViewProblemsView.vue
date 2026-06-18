@@ -1,59 +1,75 @@
 <template>
   <div id="viewProblemsView">
-    <a-row :gutter="[24, 24]">
+    <a-row :gutter="[16, 16]">
       <a-col :md="12" :xs="24">
-        <a-tabs default-active-key="problem">
-          <a-tab-pane key="problem" title="Problem">
-            <a-card v-if="problem" :title="problem.title">
-              <MdViewer :value="problem.content || ''" />
-              <a-descriptions title="Pass Limit" :column="{ xs: 1 }">
-                <a-descriptions-item label="Time Limit">
-                  {{ problem.judgeConfig.timeLimit ?? 0 }}
-                </a-descriptions-item>
-                <a-descriptions-item label="Memory Limit">
-                  {{ problem.judgeConfig.memoryLimit ?? 0 }}
-                </a-descriptions-item>
-              </a-descriptions>
-              <template #extra>
-                <a-space wrap>
-                  <a-tag
-                    v-for="(tag, index) of problem.tags"
-                    :key="index"
-                    color="green"
-                    >{{ tag }}
-                  </a-tag>
-                </a-space>
-              </template>
-            </a-card>
-          </a-tab-pane>
-          <a-tab-pane key="answer" title="Answer"> Answer</a-tab-pane>
-        </a-tabs>
+        <section class="d-panel d-reg work-panel">
+          <header class="d-panel__head">
+            <div class="d-panel__title">
+              <span class="d-label">Problem</span>
+              <span class="d-code">#{{ problem?.id ?? "—" }}</span>
+            </div>
+            <a-space wrap :size="4">
+              <a-tag
+                v-for="(tag, index) of problem?.tags"
+                :key="index"
+                color="green"
+                >{{ tag }}
+              </a-tag>
+            </a-space>
+          </header>
+          <div class="d-panel__body">
+            <a-tabs default-active-key="problem">
+              <a-tab-pane key="problem" title="Problem">
+                <template v-if="problem">
+                  <h2 class="problem-title">{{ problem.title }}</h2>
+                  <div class="limit-row">
+                    <span class="limit-item d-code">
+                      TIME {{ problem.judgeConfig.timeLimit ?? 0 }}ms
+                    </span>
+                    <span class="limit-item d-code">
+                      MEM {{ problem.judgeConfig.memoryLimit ?? 0 }}KB
+                    </span>
+                  </div>
+                  <MdViewer :value="problem.content || ''" />
+                </template>
+              </a-tab-pane>
+              <a-tab-pane key="answer" title="Answer"> Answer</a-tab-pane>
+            </a-tabs>
+          </div>
+        </section>
       </a-col>
       <a-col :md="12" :xs="24">
-        <a-tabs default-active-key="code">
-          <template #extra>
-            <a-form :model="form" layout="inline" style="margin-bottom: -6px">
-              <a-form-item field="language" style="min-width: 100px">
-                <a-select v-model="form.language" :style="{ width: '100px' }">
-                  <a-option>java</a-option>
-                  <a-option>cpp</a-option>
-                  <a-option>go</a-option>
-                  <a-option>html</a-option>
-                </a-select>
-              </a-form-item>
-            </a-form>
-            <a-button type="primary" style="min-width: 150px" @click="doSubmit"
-              >Submit
-            </a-button>
-          </template>
-          <a-tab-pane key="code" title="Code">
+        <section class="d-panel d-reg work-panel">
+          <header class="d-panel__head">
+            <div class="d-panel__title">
+              <span class="d-label">Workspace</span>
+              <span class="d-code">// CODE</span>
+            </div>
+            <a-space :size="8">
+              <a-form :model="form" layout="inline" class="lang-form">
+                <a-form-item field="language" style="min-width: 100px">
+                  <a-select v-model="form.language" :style="{ width: '110px' }">
+                    <a-option>java</a-option>
+                    <a-option>(more coming)</a-option>
+                  </a-select>
+                </a-form-item>
+              </a-form>
+              <a-button
+                type="primary"
+                style="min-width: 130px"
+                @click="doSubmit"
+                >Submit
+              </a-button>
+            </a-space>
+          </header>
+          <div class="editor-wrap">
             <CodeEditor
               :value="form.code"
               :language="form.language"
               :handle-change="changeCode"
             />
-          </a-tab-pane>
-        </a-tabs>
+          </div>
+        </section>
       </a-col>
     </a-row>
   </div>
@@ -130,5 +146,36 @@ const changeCode = (value: string) => {
 
 #viewProblemsView .arco-space-horizontal .arco-space-item {
   margin-bottom: 0 !important;
+}
+
+#viewProblemsView .lang-form .arco-form-item {
+  margin-bottom: 0;
+}
+
+#viewProblemsView .editor-wrap {
+  border-top: 1px solid var(--d-line);
+}
+
+#viewProblemsView .problem-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 var(--d-space-3);
+  color: var(--d-ink);
+}
+
+#viewProblemsView .limit-row {
+  display: flex;
+  gap: var(--d-space-2);
+  margin-bottom: var(--d-space-4);
+}
+
+#viewProblemsView .limit-item {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  border: 1px solid var(--d-line);
+  border-radius: var(--d-radius);
+  padding: 4px var(--d-space-2);
+  background: var(--d-bg);
 }
 </style>

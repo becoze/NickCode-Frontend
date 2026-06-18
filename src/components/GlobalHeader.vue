@@ -1,52 +1,61 @@
 <template>
-  <a-row id="globalHeader" align="center" :wrap="false">
-    <a-col flex="auto">
-      <div id="globalHeader">
-        <a-menu
-          mode="horizontal"
-          :selected-keys="selectedKeys"
-          @menu-item-click="doMenuClick"
-        >
-          <a-menu-item
-            key="0"
-            :style="{ padding: 0, marginRight: '38px' }"
-            disabled
+  <div id="globalHeader">
+    <div class="brand" @click="goToHome">
+      <img class="logo" src="../assets/Stardew_Chicken.png" />
+      <div class="brand-text">
+        <span class="brand-name">NICKCODE_OJ</span>
+        <span class="brand-tag d-code">ONLINE JUDGE // v1.2.2</span>
+      </div>
+    </div>
+
+    <div class="nav">
+      <a-menu
+        mode="horizontal"
+        :selected-keys="selectedKeys"
+        @menu-item-click="doMenuClick"
+      >
+        <a-menu-item v-for="item in visibleRoutes" :key="item.path">
+          <span
+            class="menu-label"
+            :class="{ 'menu-label--locked': isLocked(item) }"
           >
-            <div class="title-bar">
-              <img class="logo" src="../assets/Stardew_Chicken.png" />
-              <div class="title">Becoze OJ</div>
-            </div>
-          </a-menu-item>
-
-          <a-menu-item v-for="item in visibleRoutes" :key="item.path">
             {{ item.name }}
-          </a-menu-item>
-        </a-menu>
-      </div>
-    </a-col>
+            <LockdownBar v-if="isLocked(item)" />
+          </span>
+        </a-menu-item>
+      </a-menu>
+    </div>
 
-    <a-col flex="220px">
-      <div class="user-area">
-        <!-- not login -->
-        <template v-if="!isLogin">
-          <a-space>
-            <a-button type="primary" @click="goToLogin">Sign in</a-button>
-            <a-button type="text" @click="goToRegister">Sign up</a-button>
-          </a-space>
-        </template>
+    <div class="user-area">
+      <!-- theme toggle: flips attributes only, no remount / no data loss -->
+      <ThemeToggle />
 
-        <!-- logged in -->
-        <template v-else>
-          <a-space>
-            <span class="user-name">{{ loginUserName }}</span>
-            <a-button type="text" status="danger" @click="doLogout"
-              >Logout
-            </a-button>
-          </a-space>
-        </template>
-      </div>
-    </a-col>
-  </a-row>
+      <!-- not login -->
+      <template v-if="!isLogin">
+        <a-space :size="8">
+          <span class="status-dot status-dot--idle" />
+          <span class="d-code status-text">GUEST</span>
+          <a-button type="primary" size="small" @click="goToLogin"
+            >Sign in</a-button
+          >
+          <a-button type="text" size="small" @click="goToRegister"
+            >Sign up</a-button
+          >
+        </a-space>
+      </template>
+
+      <!-- logged in -->
+      <template v-else>
+        <a-space :size="10">
+          <span class="status-dot status-dot--live" />
+          <span class="user-name">{{ loginUserName }}</span>
+          <a-button type="text" size="small" status="danger" @click="doLogout"
+            >Logout
+          </a-button>
+        </a-space>
+      </template>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -57,6 +66,9 @@ import { routes } from "@/router/routes";
 import checkAccess from "@/access/checkAccesss";
 import message from "@arco-design/web-vue/es/message";
 import { UserControllerService } from "../../generated";
+import ThemeToggle from "@/components/ThemeToggle.vue";
+import LockdownBar from "@/components/LockdownBar.vue";
+import type { RouteRecordRaw } from "vue-router";
 
 const store = useStore();
 const router = useRouter();
@@ -85,6 +97,12 @@ const loginUserName = computed(() => {
  * Click menu item
  */
 const doMenuClick = (key: string) => {
+  // Notify the visitor when the target page is locked behind login.
+  // Navigation still proceeds; the route guard sends them to the login page.
+  const target = routes.find((item) => item.path === key);
+  if (target && isLocked(target)) {
+    message.warning("Login required — please sign in to access this page");
+  }
   router.push({
     path: key,
   });
@@ -108,6 +126,16 @@ const visibleRoutes = computed(() => {
 });
 
 /**
+ * A menu item is "locked" when the route requires authentication
+ * (meta.access is set) but the current visitor is not logged in.
+ * Used only to render the decorative lockdown overlay; routing is
+ * still enforced by the route guard in @/access.
+ */
+const isLocked = (item: RouteRecordRaw) => {
+  return !!item.meta?.access && !isLogin.value;
+};
+
+/**
  * Current selected menu
  */
 const selectedKeys = ref([router.currentRoute.value.path]);
@@ -126,6 +154,12 @@ onMounted(async () => {
 /**
  * Redirect buttons
  */
+const goToHome = () => {
+  router.push({
+    path: "/problems",
+  });
+};
+
 const goToLogin = () => {
   router.push({
     path: "/user/login",
@@ -158,30 +192,112 @@ const doLogout = async () => {
 </script>
 
 <style scoped>
-.title-bar {
+#globalHeader {
+  height: 100%;
   display: flex;
   align-items: center;
+  gap: var(--d-space-5);
+  padding: 0 var(--d-space-4);
+}
+
+/* ---- brand block ---- */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--d-space-3);
+  cursor: pointer;
+  padding-right: var(--d-space-5);
+  border-right: 1px solid var(--d-line);
+  height: 100%;
 }
 
 .logo {
-  height: 35px;
+  height: 30px;
+  width: 30px;
+  object-fit: contain;
 }
 
-.title {
-  color: #444;
-  margin-left: 15px;
-  font-size: 20px;
-  font-weight: bold;
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
 }
 
+.brand-name {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--d-ink);
+}
+
+.brand-tag {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+
+/* ---- nav ---- */
+.nav {
+  flex: 1;
+  min-width: 0;
+}
+
+#globalHeader :deep(.arco-menu-horizontal) {
+  background: transparent;
+  line-height: 54px;
+}
+
+#globalHeader :deep(.arco-menu-horizontal .arco-menu-item) {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--d-ink-secondary);
+}
+
+#globalHeader :deep(.arco-menu-horizontal .arco-menu-selected) {
+  color: var(--d-ink);
+}
+
+/* anchor for the lockdown overlay; keeps the label text readable underneath */
+.menu-label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.menu-label--locked {
+  color: var(--d-ink-secondary);
+}
+
+/* ---- user area ---- */
 .user-area {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  gap: var(--d-space-4);
 }
 
 .user-name {
-  color: #333;
+  color: var(--d-ink);
   font-weight: 500;
+  font-size: 13px;
+}
+
+.status-text {
+  letter-spacing: 0.1em;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  display: inline-block;
+  border-radius: 50%;
+}
+
+.status-dot--live {
+  background: var(--accent-green);
+  box-shadow: 0 0 6px var(--accent-green);
+}
+
+.status-dot--idle {
+  background: var(--d-ink-muted);
 }
 </style>

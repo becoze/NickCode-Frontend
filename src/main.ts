@@ -7,5 +7,10 @@ import store from "./store";
 import "@/plugins/axios";
 import "@/access";
 import "bytemd/dist/index.css";
+import "@/styles/dossier.css";
+import { initTheme } from "@/composables/useTheme";
+
+// Apply the persisted dossier theme (defaults to Terminal Dark) before mount.
+initTheme();
 
 createApp(App).use(ArcoVue).use(store).use(router).mount("#app");

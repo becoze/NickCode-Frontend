@@ -1,11 +1,13 @@
 <template>
   <div class="userLogin">
-    <h1 style="margin-bottom: 16px">Login</h1>
+    <div class="form-head">
+      <span class="d-kicker">SESSION // SIGN-IN</span>
+      <h1 class="form-title">Login</h1>
+    </div>
     <a-form
       auto-label-width
       label-align="left"
       :model="form"
-      style="max-width: 480px; margin: 0 auto"
       @submit="handleSubmit"
     >
       <a-form-item field="userAccount" label="User account">
@@ -15,20 +17,17 @@
         <a-input-password v-model="form.userPassword" placeholder="Password" />
       </a-form-item>
       <a-form-item>
-        <a-button type="primary" html-type="" style="width: 120px"
-          >Login
-        </a-button>
+        <a-button type="primary" html-type="submit" long>Login </a-button>
       </a-form-item>
       <a-form-item>
-        <a-button
-          type="secondary"
-          html-type="submit"
-          style="width: 140px"
-          @click="redirectHome"
-        >
+        <a-button type="secondary" long @click="redirectHome">
           Back to Home
         </a-button>
       </a-form-item>
+      <div class="form-switch">
+        <span>No account yet?</span>
+        <a-link @click="goToRegister">Create one</a-link>
+      </div>
     </a-form>
   </div>
 </template>
@@ -75,4 +74,32 @@ const redirectHome = () => {
     replace: true,
   });
 };
+const goToRegister = () => {
+  router.push({
+    path: "/user/register",
+  });
+};
 </script>
+
+<style scoped>
+.form-head {
+  margin-bottom: var(--d-space-5);
+}
+
+.form-title {
+  margin: var(--d-space-1) 0 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--d-ink);
+}
+
+.form-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--d-space-2);
+  margin-top: var(--d-space-3);
+  font-size: 13px;
+  color: var(--d-ink-muted);
+}
+</style>

@@ -9,8 +9,16 @@ import ManageProblemView from "@/views/problem/ManageProblemView.vue";
 import ProblemsView from "@/views/problem/ProblemsView.vue";
 import ProblemSubmitView from "@/views/problem/ProblemSubmitView.vue";
 import ViewProblemsView from "@/views/problem/ViewProblemsView.vue";
+import ViewSubmissionView from "@/views/problem/ViewSubmissionView.vue";
 
 export const routes: Array<RouteRecordRaw> = [
+  {
+    path: "/",
+    redirect: "/problems",
+    meta: {
+      hideInMenu: true,
+    },
+  },
   {
     path: "/user",
     name: "User",
@@ -48,6 +56,16 @@ export const routes: Array<RouteRecordRaw> = [
     path: "/view/problem/:id",
     name: "View Problem",
     component: ViewProblemsView,
+    props: true,
+    meta: {
+      access: [ACCESS_ENUM.ADMIN, ACCESS_ENUM.USER], // admin / user
+      hideInMenu: true,
+    },
+  },
+  {
+    path: "/view/submission/:id",
+    name: "View Submission",
+    component: ViewSubmissionView,
     props: true,
     meta: {
       access: [ACCESS_ENUM.ADMIN, ACCESS_ENUM.USER], // admin / user
