@@ -1,0 +1,289 @@
+/* =============================================================================
+   DOSSIER UI — global theme for Becoze OJ
+   Terminal Dark (LeetCode dev console) + Corporate Dossier Sci-Fi (Rhine).
+   Layered on top of Arco Design via CSS variable overrides only.
+   ========================================================================== */
+
+/* ---- Dossier tokens (used by our own helper classes) -------------------- */
+:root {
+  --accent-green: #abdd21;
+  --accent-orange: #fa8500;
+  --accent-orange-alt: #ffa116;
+  --accent-red: #f5483b;
+  --accent-yellow: #ffc01e;
+
+  /* Dossier Light (Rhine — cold white archive) is the default surface set. */
+  --d-bg: #f2f3f5;
+  --d-surface: #ffffff;
+  --d-surface-raised: #e8eaed;
+  --d-ink: #16181d;
+  --d-ink-secondary: #5a5f66;
+  --d-ink-muted: #9aa0a6;
+  --d-line: #d4d7dc;
+  --d-line-strong: #16181d;
+  --d-grid: rgba(22, 24, 29, 0.045);
+
+  --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, "SFMono-Regular",
+    Menlo, Consolas, monospace;
+
+  --d-space-1: 4px;
+  --d-space-2: 8px;
+  --d-space-3: 12px;
+  --d-space-4: 16px;
+  --d-space-5: 24px;
+  --d-space-6: 32px;
+  --d-radius: 2px;
+}
+
+/* Terminal Dark (LeetCode — developer console) override. */
+:root[data-mode="dark"] {
+  --d-bg: #1a1a1a;
+  --d-surface: #282828;
+  --d-surface-raised: #303030;
+  --d-ink: #eff1f6;
+  --d-ink-secondary: #b3b3b3;
+  --d-ink-muted: #808080;
+  --d-line: #3e3e3e;
+  --d-line-strong: #5a5a5a;
+  --d-grid: rgba(255, 255, 255, 0.022);
+}
+
+/* ---- Arco overrides: sharp corners + accent palette --------------------- */
+/* Arco defines its palette + radius on `body` (light) / `body[arco-theme]`
+   (dark). `body[data-theme]` (always set by initTheme) outranks the plain
+   `body` selector, so the dossier accent palette wins in BOTH modes. */
+body[data-theme] {
+  /* sharp, rational geometry */
+  --border-radius-none: 0;
+  --border-radius-small: 0px;
+  --border-radius-medium: 2px;
+  --border-radius-large: 2px;
+
+  /* primary -> dossier orange (FA8500), 10-step ramp */
+  --primary-1: 253, 240, 224;
+  --primary-2: 253, 225, 191;
+  --primary-3: 253, 206, 150;
+  --primary-4: 252, 182, 102;
+  --primary-5: 251, 157, 52;
+  --primary-6: 250, 133, 0;
+  --primary-7: 214, 108, 0;
+  --primary-8: 179, 86, 0;
+  --primary-9: 143, 65, 0;
+  --primary-10: 107, 46, 0;
+
+  /* success / "green" tags -> fluorescent green (ABDD21) */
+  --green-6: 171, 221, 33;
+  --success-6: 171, 221, 33;
+}
+
+/* ---- Dark surfaces aligned to the dossier neutral scale ----------------- */
+body[arco-theme="dark"] {
+  --color-bg-1: #1a1a1a;
+  --color-bg-2: #282828;
+  --color-bg-3: #2f2f2f;
+  --color-bg-4: #303030;
+  --color-bg-5: #373739;
+  --color-border: #3e3e3e;
+  --color-border-1: #2f2f2f;
+  --color-border-2: #3e3e3e;
+  --color-border-3: #4a4a4a;
+  --color-border-4: #5a5a5a;
+}
+
+/* ---- Page canvas: neutral base with a faint blueprint grid -------------- */
+html,
+body {
+  margin: 0;
+  background-color: var(--d-bg);
+  color: var(--d-ink);
+  font-family: var(--font-sans);
+  transition: background-color 0.18s linear, color 0.18s linear;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: linear-gradient(var(--d-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--d-grid) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-position: -1px -1px;
+}
+
+/* Restrained, mechanical transition when the operator flips the theme. */
+.d-panel,
+#basicLayout .header,
+#basicLayout .footer {
+  transition: background-color 0.18s linear, border-color 0.18s linear;
+}
+
+#app {
+  position: relative;
+  z-index: 1;
+}
+
+/* =============================================================================
+   Reusable Dossier helper classes
+   ========================================================================== */
+
+/* uppercase, letter-spaced section / metadata label */
+.d-label {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--d-ink-secondary);
+}
+
+/* monospace code / id / timestamp / metadata value */
+.d-code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--d-ink-muted);
+}
+
+.d-accent {
+  color: var(--accent-orange);
+}
+
+/* panel: flat surface bounded by a hairline, no shadow */
+.d-panel {
+  position: relative;
+  background: var(--d-surface);
+  border: 1px solid var(--d-line);
+  border-radius: var(--d-radius);
+}
+
+/* panel header strip: label on the left, mono code on the right */
+.d-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--d-space-3);
+  padding: var(--d-space-3) var(--d-space-4);
+  border-bottom: 1px solid var(--d-line);
+}
+
+.d-panel__title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--d-space-3);
+  min-width: 0;
+}
+
+.d-panel__body {
+  padding: var(--d-space-4);
+}
+
+/* registration / crosshair corner marks (top-left + bottom-right) */
+.d-reg {
+  position: relative;
+}
+.d-reg::before,
+.d-reg::after {
+  content: "";
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-color: var(--accent-orange);
+  border-style: solid;
+  pointer-events: none;
+  z-index: 2;
+}
+.d-reg::before {
+  top: -1px;
+  left: -1px;
+  border-width: 1px 0 0 1px;
+}
+.d-reg::after {
+  bottom: -1px;
+  right: -1px;
+  border-width: 0 1px 1px 0;
+}
+
+/* small uppercase kicker above a title */
+.d-kicker {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-orange);
+}
+
+/* thin animated scan line for active/loading affordances */
+.d-scanline {
+  position: relative;
+  overflow: hidden;
+}
+.d-scanline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent-orange),
+    transparent
+  );
+  animation: d-scan 2.4s linear infinite;
+}
+@keyframes d-scan {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+/* =============================================================================
+   Targeted Arco component tweaks (structure, not behavior)
+   ========================================================================== */
+
+/* Tables: dense, mono numerics, hairline rhythm */
+.arco-table-th {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 12px;
+  font-weight: 500;
+}
+.arco-table-td {
+  font-size: 13px;
+}
+.arco-table-cell .arco-tag {
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+/* IDs / numeric-feeling cells read as data */
+.d-mono-cell {
+  font-family: var(--font-mono);
+  color: var(--d-ink-secondary);
+}
+
+/* Horizontal nav: flat bar, accent underline on active item */
+.arco-menu-horizontal .arco-menu-item.arco-menu-selected {
+  font-weight: 500;
+}
+
+/* Buttons keep a crisp 1px structure */
+.arco-btn {
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
